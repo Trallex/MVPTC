@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MVPTC", "MVPTC\MVPTC.csproj", "{9F70DD88-1B31-4DA4-9B5C-9C88EC5BD5A7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9F70DD88-1B31-4DA4-9B5C-9C88EC5BD5A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F70DD88-1B31-4DA4-9B5C-9C88EC5BD5A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F70DD88-1B31-4DA4-9B5C-9C88EC5BD5A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F70DD88-1B31-4DA4-9B5C-9C88EC5BD5A7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7C9C16D4-BB1F-473F-9F53-EEE5DA7F047A}
+	EndGlobalSection
+EndGlobal
