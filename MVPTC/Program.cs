@@ -16,7 +16,10 @@ namespace MVPTC
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Model model = new Model();
+            View view = new View();
+            Presenter p = new Presenter(model, view);
+            Application.Run(view);
         }
     }
 }
