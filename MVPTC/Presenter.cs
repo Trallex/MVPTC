@@ -19,6 +19,7 @@ namespace MVPTC
             view.IViewDriveLoadEvent += Presenter_ViewEventLoadDrives;
             view.IViewLoadDirectories += Presenter_ViewEventLoadDirectories;
             view.IViewDirUp += Presenter_ViewEventDirUp;
+            view.ButtonClicked += Presenter_ButtonClicked;
 
         }
         private string[] Presenter_ViewEventLoadDrives(object arg1, EventArgs arg2)
@@ -27,12 +28,16 @@ namespace MVPTC
         }
         private string[] Presenter_ViewEventLoadDirectories(object arg1, EventArgs arg2)
         {
-            return model.LoadDirectories(view.CurrentPath);
-
+             return model.LoadDirectories(view.CurrentPath);
+            
         }
         private string Presenter_ViewEventDirUp(object arg1, EventArgs arg2)
         {
             return model.DirUp(view.CurrentPath);
+        }
+        private void Presenter_ButtonClicked(object arg1, EventArgs arg2)
+        {
+            model.Decide(arg1, view.CurrentPath + view.SelectedItem, view.TargetPath);
         }
     }
 }

@@ -41,6 +41,9 @@ namespace MVPTC
 
         public string[] VE_LoadDirectories(object arg, EventArgs arg2)
         {
+            pannel1.ClearSelection();
+            pannel2.ClearSelection();
+            SelectedItem = null;
             CurrentPath = arg.ToString();
             return IViewLoadDirectories(arg, arg2);
         }
@@ -69,7 +72,14 @@ namespace MVPTC
         public event Func<object, EventArgs, string[]> IViewDriveLoadEvent;
         public event Func<object, EventArgs, string[]> IViewLoadDirectories;
         public event Func<object, EventArgs, string> IViewDirUp;
+        public event Action<object, EventArgs> ButtonClicked;
 
         #endregion
+
+        public void ClickAction(object sender, EventArgs e)
+        {
+            Console.WriteLine(SelectedItem);
+            ButtonClicked(sender,e);
+        }
     }
 }
