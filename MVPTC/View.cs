@@ -76,45 +76,42 @@ namespace MVPTC
         public event Func<string, bool> ButtonClicked;
         public void ClickAction(object sender, EventArgs e)
         {
+            errorProvider1.Clear();
             Button b = sender as Button;
 
             if(Panel1Active)
             {
                 SourcePath = pannel1.CurrentPath;
                 TargetPath = pannel2.CurrentPath;
-                SelectedItem = pannel1.SelectedDir;
+                SelectedItem = pannel1.Selected;
             }
             else if (Panel2Active)
             {
                 SourcePath = pannel2.CurrentPath;
                 TargetPath = pannel1.CurrentPath;
-                SelectedItem = pannel2.SelectedDir;
+                SelectedItem = pannel2.Selected;
             }
-            if(SelectedItem!=null)
+            if(SelectedItem!=null && ButtonClicked(b.Text))
             {
                 if(b.Text == "Delete")
                 {
-                    if (ButtonClicked(b.Text))
-                    {
-                        if (Panel1Active)
-                            pannel1.Re(sender, e);
-                        else if (Panel2Active)
-                            pannel2.Re(sender, e);
-                    }
+                    if (Panel1Active)
+                        pannel1.Re(sender, e);
+                    else if (Panel2Active)
+                        pannel2.Re(sender, e);                
                 }
                 else if(TargetPath !="")
                 {
-                    if(ButtonClicked(b.Text))
-                    {
-                        pannel1.Re(sender, e);
-                        pannel2.Re(sender, e);
-                    }
+                    pannel1.Re(sender, e);
+                    pannel2.Re(sender, e);
+                    
                 }
             }            
         }
         public void Error(string text)
         {
-            MessageBox.Show(text);
+            errorProvider1.Clear();
+            errorProvider1.SetError(labelError, text);
         }
     }
 }

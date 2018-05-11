@@ -63,7 +63,7 @@ namespace MVPTC
                 else textBoxPath.Text = value;
             }
         }
-        public string SelectedDir
+        public string Selected
         {
             get
             {   if (listBoxComponents.SelectedItem != null)
