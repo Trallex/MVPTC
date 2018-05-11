@@ -15,8 +15,8 @@ namespace MVPTC
         public View()
         {
             InitializeComponent();
-            pannel1.PannelDriveLoadEvent += VE_LoadDrives;
-            pannel2.PannelDriveLoadEvent += VE_LoadDrives;
+            pannel1.PanelEventLoadDrives += VE_LoadDrives;
+            pannel2.PanelEventLoadDrives += VE_LoadDrives;
             pannel1.PannelLoadDirEvent += VE_LoadDirectories;
             pannel2.PannelLoadDirEvent += VE_LoadDirectories;
             pannel1.PannelItemSelectAction += VA_ItemSelect;
@@ -25,61 +25,96 @@ namespace MVPTC
             pannel2.PannelDirUp += VA_DirUp;
         }
 
-        public string CurrentPath { get; set; }
+        public string SourcePath { get; set; }
         public string TargetPath { get; set; }
         public string SelectedItem { get; set; }
+        public bool Panel1Active { get; set; }
+        public bool Panel2Active { get; set; }
 
-        public string VA_DirUp(object arg, EventArgs arg2)
-        {
-           return IViewDirUp(arg, arg2);
-        }
-
+        public event Func<object, EventArgs, string[]> IViewDriveLoadEvent;
         public string[] VE_LoadDrives(object arg, EventArgs arg2)
         {
             return IViewDriveLoadEvent(arg, arg2);
         }
 
+        public event Func<object, EventArgs, string[]> IViewLoadDirectories;
         public string[] VE_LoadDirectories(object arg, EventArgs arg2)
         {
-            pannel1.ClearSelection();
-            pannel2.ClearSelection();
-            SelectedItem = null;
-            CurrentPath = arg.ToString();
             return IViewLoadDirectories(arg, arg2);
         }
 
-        public void VA_ItemSelect(object sender, EventArgs e)
+        public event Func<object, EventArgs, string> IViewDirUp;
+        public string VA_DirUp(object arg, EventArgs arg2)
+        {
+            return IViewDirUp(arg, arg2);
+        }
+
+
+        public void VA_ItemSelect(object sender, EventArgs e, bool path)
         {
             Pannel pannel = sender as Pannel;
-            if (pannel.Name == "pannel1")
+
+            if (path) SelectedItem = null;
+            else
             {
-                pannel2.ClearSelection();
-                CurrentPath = pannel1.CurrentPath;
+                if (pannel.Name == "pannel1")
+                {
+                    pannel2.ClearSelection();
+                    Panel1Active = true;
+                    Panel2Active = false;
+
+                }
+                else if (pannel.Name == "pannel2")
+                {
+                    pannel1.ClearSelection();
+                    Panel2Active = true;
+                    Panel1Active = false;
+                }
+            }
+        }
+   
+        public event Func<string, bool> ButtonClicked;
+        public void ClickAction(object sender, EventArgs e)
+        {
+            Button b = sender as Button;
+
+            if(Panel1Active)
+            {
+                SourcePath = pannel1.CurrentPath;
                 TargetPath = pannel2.CurrentPath;
                 SelectedItem = pannel1.SelectedDir;
-
             }
-            else if(pannel.Name == "pannel2")
+            else if (Panel2Active)
             {
-                pannel1.ClearSelection();
-                CurrentPath = pannel2.CurrentPath;
+                SourcePath = pannel2.CurrentPath;
                 TargetPath = pannel1.CurrentPath;
                 SelectedItem = pannel2.SelectedDir;
             }
+            if(SelectedItem!=null)
+            {
+                if(b.Text == "Delete")
+                {
+                    if (ButtonClicked(b.Text))
+                    {
+                        if (Panel1Active)
+                            pannel1.Re(sender, e);
+                        else if (Panel2Active)
+                            pannel2.Re(sender, e);
+                    }
+                }
+                else if(TargetPath !="")
+                {
+                    if(ButtonClicked(b.Text))
+                    {
+                        pannel1.Re(sender, e);
+                        pannel2.Re(sender, e);
+                    }
+                }
+            }            
         }
-
-        #region iview implementations
-        public event Func<object, EventArgs, string[]> IViewDriveLoadEvent;
-        public event Func<object, EventArgs, string[]> IViewLoadDirectories;
-        public event Func<object, EventArgs, string> IViewDirUp;
-        public event Action<object, EventArgs> ButtonClicked;
-
-        #endregion
-
-        public void ClickAction(object sender, EventArgs e)
+        public void Error(string text)
         {
-            Console.WriteLine(SelectedItem);
-            ButtonClicked(sender,e);
+            MessageBox.Show(text);
         }
     }
 }

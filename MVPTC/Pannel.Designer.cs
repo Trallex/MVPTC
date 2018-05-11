@@ -41,7 +41,7 @@
             this.comboBoxDrive.Name = "comboBoxDrive";
             this.comboBoxDrive.Size = new System.Drawing.Size(54, 21);
             this.comboBoxDrive.TabIndex = 0;
-            this.comboBoxDrive.DropDown += new System.EventHandler(this.listDrives);
+            this.comboBoxDrive.DropDown += new System.EventHandler(this.loadDrives);
             this.comboBoxDrive.SelectedIndexChanged += new System.EventHandler(this.changeDrive);
             // 
             // listBoxComponents

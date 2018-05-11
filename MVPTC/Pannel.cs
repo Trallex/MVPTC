@@ -18,21 +18,44 @@ namespace MVPTC
         }
        
         private string[] drives;
-        private string[] files;
         private string[] directories;
 
 
         public string[] Drives
         {
             get { return drives; }
-            set { drives = value; }
+            set
+            {
+                drives = value;
+                comboBoxDrive.Items.Clear();
+                if (drives != null)
+                {
+                    foreach (string d in drives)
+                    {
+                        comboBoxDrive.Items.Add(d);
+                    }
+                }
+            }
         }
+
+        public string[] Directories
+        {
+            get { return directories; }
+            set
+            {
+                directories = value;
+                if (directories != null)
+                    listBoxComponents.Items.AddRange(directories);
+            }
+        }
+
+
         public string CurrentPath
         {
             get { return textBoxPath.Text; }
             set
             {
-                if (value.Contains("<d>"))
+                if (value != null && value.Contains("<d>") )
                 {
                     int index = value.IndexOf("<");
                     textBoxPath.Text = value.Remove(index, 3);
@@ -43,79 +66,68 @@ namespace MVPTC
         public string SelectedDir
         {
             get
-            {   
-                if (listBoxComponents.SelectedItem.ToString().Contains("<d>"))
+            {   if (listBoxComponents.SelectedItem != null)
                 {
-                    int index = listBoxComponents.SelectedItem.ToString().IndexOf("<");
-                    return listBoxComponents.SelectedItem.ToString().Remove(index, 3);
+                    if (listBoxComponents.SelectedItem.ToString().Contains("<d>"))
+                    {
+                        int index = listBoxComponents.SelectedItem.ToString().IndexOf("<");
+                        return listBoxComponents.SelectedItem.ToString().Remove(index, 3);
+                    }
+                    else return listBoxComponents.SelectedItem.ToString();
                 }
-
-                else return listBoxComponents.SelectedItem.ToString();
+                else return null;
             }
             set { }
         }
-        public string[] Files
-        {
-            get { return files; }
-            set { files = value; }
-        }
-        public string[] Directories
-        {
-            get { return directories; }
-            set { directories = value; }
-        }
 
-
-        public event Func<object, EventArgs, string[]> PannelDriveLoadEvent;
-        public void listDrives(object sender, EventArgs e)
-        {
-            if (PannelDriveLoadEvent != null)
-            {
-                Drives = PannelDriveLoadEvent(sender, e);
-                comboBoxDrive.Items.Clear();
-                comboBoxDrive.Items.AddRange(Drives);
-            }
-        }
         private void changeDrive(object sender, EventArgs e)
         {
             ComboBox drives = sender as ComboBox;
             textBoxPath.Text = drives.SelectedItem.ToString();
         }
+
+        
         public event Func<object, EventArgs, string[]> PannelLoadDirEvent;
         public void PathChanged(object sender, EventArgs e)
         {
             if (PannelLoadDirEvent != null) 
             {
+                listBoxComponents.Items.Clear();
                 Directories = PannelLoadDirEvent(this.CurrentPath, e);
-                if (Directories != null)
-                {
-                    listBoxComponents.Items.Clear();
-                    foreach(String temp in Directories)
-                    {
-                        listBoxComponents.Items.Add(temp);
-                    }
-                }
             }
         }
 
-        public event Func<object, EventArgs, string> PannelDirUp;
-        public void DirUp(object sender, EventArgs e)
+        public event Func<object, EventArgs, string[]> PanelEventLoadDrives;
+        private void loadDrives(object sender, EventArgs e)
         {
-            if (PannelDirUp != null)
+            if (PanelEventLoadDrives != null)
             {
-                CurrentPath = PannelDirUp(sender, e);
+                Drives = PanelEventLoadDrives(sender, e);
+
             }
         }
 
-        public event Action<object, EventArgs> PannelItemSelectAction;
+        public event Action<object, EventArgs, bool> PannelItemSelectAction;
         public void ItemSelect(object sender, EventArgs e)
         {
+            
             ListBox listbox = sender as ListBox;
-            if (listBoxComponents.SelectedItem != null)
+            if (listbox != null)
             {
-                PannelItemSelectAction(this, e);
+                if (listBoxComponents.SelectedItem != null)
+                {
+                    PannelItemSelectAction(this, e, false);
+                }
+                else
+                {
+                    PannelItemSelectAction(this, e, true);
+                }
             }
-        }
+            else
+            {
+                PannelItemSelectAction(this, e, true);
+            }
+        }       
 
         public void ClearSelection()
         {
@@ -129,12 +141,20 @@ namespace MVPTC
             {
                 CurrentPath = CurrentPath + listBox.SelectedItem.ToString();
             }
+            ItemSelect(sender, e);
         }
 
+        public event Func<object, EventArgs, string> PannelDirUp;
         private void buttonBack_Click(object sender, EventArgs e)
-        {
-            if (CurrentPath.Length > 3)
-                CurrentPath = PannelDirUp(sender, e);
+        {            
+            CurrentPath = PannelDirUp(this.CurrentPath, e);
+            ItemSelect(sender, e);
         }
+        
+        public void Re(object sender, EventArgs e)
+        {
+            PathChanged(sender, e);
+        }
+
     }
 }

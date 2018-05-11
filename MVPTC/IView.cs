@@ -11,8 +11,11 @@ namespace MVPTC
         event Func<object, EventArgs, string[]> IViewDriveLoadEvent;
         event Func<object, EventArgs, string[]> IViewLoadDirectories;
         event Func<object, EventArgs, string> IViewDirUp;
-        event Action<object, EventArgs> ButtonClicked;
-        string CurrentPath { get; set; }
+        event Func<string, bool> ButtonClicked;
+
+        void Error(string text);
+
+        string SourcePath { get; set; }
         string TargetPath { get; set; }
         string SelectedItem { get; set; }
     }

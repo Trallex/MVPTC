@@ -70,7 +70,6 @@
             this.pannel2.CurrentPath = "";
             this.pannel2.Directories = null;
             this.pannel2.Drives = null;
-            this.pannel2.Files = null;
             this.pannel2.Location = new System.Drawing.Point(374, 12);
             this.pannel2.Name = "pannel2";
             this.pannel2.Size = new System.Drawing.Size(309, 378);
@@ -81,7 +80,6 @@
             this.pannel1.CurrentPath = "";
             this.pannel1.Directories = null;
             this.pannel1.Drives = null;
-            this.pannel1.Files = null;
             this.pannel1.Location = new System.Drawing.Point(12, 12);
             this.pannel1.Name = "pannel1";
             this.pannel1.Size = new System.Drawing.Size(309, 378);

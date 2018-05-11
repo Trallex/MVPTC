@@ -31,8 +31,6 @@ namespace MVPTC
 
         internal string[] LoadDirectories(string path)
         {
-            try
-            {
                 if (Directory.Exists(path))
                 {
                     string[] dir = Directory.GetDirectories(path);
@@ -49,49 +47,40 @@ namespace MVPTC
                     if (File.Exists(path))
                         Process.Start(path);
                     return null;
-                }
-            } catch (System.UnauthorizedAccessException) { return null; }
+                }          
         }
 
         internal string DirUp(string path)
         {
-            if(Directory.GetParent(path).ToString()!=null)
-                return Directory.GetParent(path).ToString();
-            return path;
+            if (Path.GetDirectoryName(path) == null)
+                return "";
+            else
+                return Directory.GetParent(path).ToString();        
         }
 
-        internal void Move(string source, string destination)
-        {
-            Console.WriteLine("Move" + source + "to " + destination);
-        }
 
-        internal void Copy(string source, string destination)
+
+        internal bool Move(string source, string destination)
         {
-            Console.WriteLine("Copy " + source + " to " + destination);
-            if (Directory.Exists(source)) 
+            if (Directory.Exists(source))
             {
-                CopyDir(source, destination, true);
+                if (Directory.GetDirectoryRoot(source) == Directory.GetDirectoryRoot(destination))
+                    Directory.Move(source, destination);
+                else
+                {
+                    DirCopy(source, destination, true);
+                    Directory.Delete(source, true);
+                }
+
             }
             else
-            {
-                try   
-                {
-                    File.Copy(source, destination);                    
-                }
-                catch (IOException) { } 
-                catch (System.UnauthorizedAccessException) { } 
-                catch (System.ArgumentException) { }
-            }
+                File.Move(source, destination);
+           return true;
         }
 
-
-
-        internal void Delete(string source)
+        internal bool Delete(string source)
         {
-            Console.WriteLine("Delete" + source );
-            try
-            {
-                if(Directory.Exists(source))
+                if (Directory.Exists(source))
                 {
                     Directory.Delete(source, true);
                 }
@@ -99,66 +88,46 @@ namespace MVPTC
                 {
                     File.Delete(source);
                 }
-            }
-            catch (IOException) { } 
-            catch (System.UnauthorizedAccessException) { }
-            catch (System.ArgumentException) { }
+            return true;
         }
 
-        internal void Decide(object but, string source, string destination)
+        internal bool Copy(string source, string destination)
         {
-            Button button = but as Button;
-            switch(button.Text)
-            {
-                case "Copy":
-                    Copy(source, destination);
-                    break;
-                case "Move":
-                    Move(source, destination);
-                    break;
-                case "Delete":
-                    Delete(source);
-                    break;
-
-            }
+            if (Directory.Exists(source))
+                DirCopy(source, destination, true);
+            else
+                File.Copy(source, destination);
+            return true;
         }
 
-
-        private static void CopyDir(string sourceDirName, string destDirName, bool copySubDirs)
+        private static void DirCopy(string source, string destination, bool subDir)
         {
-            DirectoryInfo dir = new DirectoryInfo(sourceDirName);
-
-            if (!dir.Exists)
+            DirectoryInfo directoryInfo = new DirectoryInfo(source);
+            DirectoryInfo[] dirs = directoryInfo.GetDirectories();
+            if (!Directory.Exists(destination))
+                Directory.CreateDirectory(destination);
+            if(subDir)
             {
-                throw new DirectoryNotFoundException(
-                    "Source directory does not exist or could not be found: "
-                    + sourceDirName);
-            }
-
-            DirectoryInfo[] dirs = dir.GetDirectories();
-            // If the destination directory doesn't exist, create it.
-            if (!Directory.Exists(destDirName))
-            {
-                Directory.CreateDirectory(destDirName);
-            }
-
-            // Get the files in the directory and copy them to the new location.
-            FileInfo[] files = dir.GetFiles();
-            foreach (FileInfo file in files)
-            {
-                string temppath = Path.Combine(destDirName, file.Name); //'System.IO.IOException -> when the filename exist!!
-                file.CopyTo(temppath, false);
-            }
-
-            // If copying subdirectories, copy them and their contents to new location.
-            if (copySubDirs)
-            {
-                foreach (DirectoryInfo subdir in dirs)
+                foreach(DirectoryInfo subD in dirs)
                 {
-                    string temppath = Path.Combine(destDirName, subdir.Name);
-                    CopyDir(subdir.FullName, temppath, copySubDirs);
+                    string temppath = Path.Combine(destination, subD.Name);
+                    DirCopy(subD.FullName, temppath, subDir);
                 }
             }
+            FileInfo[] files = directoryInfo.GetFiles();
+            foreach(FileInfo file in files)
+            {
+                string temp = Path.Combine(destination, file.Name);
+                file.CopyTo(temp, false);
+            }
+
         }
+
+
+
+ 
+
+
+        
     }
 }
